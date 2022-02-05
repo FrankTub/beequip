@@ -1,25 +1,34 @@
-from flask import Flask, request, jsonify
+from flask import Flask
+from flask_restful import Resource, Api, reqparse
+import pandas as pd
+import ast
 
 app = Flask(__name__)
+api = Api(app)
 
-countries = [
-    {"id": 1, "name": "Thailand", "capital": "Bangkok", "area": 513120},
-    {"id": 2, "name": "Australia", "capital": "Canberra", "area": 7617930},
-    {"id": 3, "name": "Egypt", "capital": "Cairo", "area": 1010408},
-]
 
-def _find_next_id():
-    return max(country["id"] for country in countries) + 1
+class Customers(Resource):
+    # methods go here
+    def get(self):
+        data = pd.read_csv('data\customers.csv')  # read CSV
+        data = data.to_dict()  # convert dataframe to dictionary
+        return {'data': data}, 200  # return data and 200 OK code
+    
+class Installments(Resource):
+    def get(self):
+        data = pd.read_csv('data\installments.csv')  # read CSV
+        data = data.to_dict()  # convert dataframe to dictionary
+        return {'data': data}, 200  # return data and 200 OK code
 
-@app.get("/countries")
-def get_countries():
-    return jsonify(countries)
+class Leases(Resource):
+    def get(self):
+        data = pd.read_csv('data\leases.csv')  # read CSV
+        data = data.to_dict()  # convert dataframe to dictionary
+        return {'data': data}, 200  # return data and 200 OK code
 
-@app.post("/countries")
-def add_country():
-    if request.is_json:
-        country = request.get_json()
-        country["id"] = _find_next_id()
-        countries.append(country)
-        return country, 201
-    return {"error": "Request must be JSON"}, 415
+api.add_resource(Customers, '/customers')  # '/customers' is our entry point for Customers
+api.add_resource(Installments, '/installments')  # and '/installments' is our entry point for Installments
+api.add_resource(Leases, '/leases')  # and '/leases' is our entry point for Leases
+
+if __name__ == '__main__':
+    app.run()  # run our Flask app
