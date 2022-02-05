@@ -1,16 +1,12 @@
-from flask import Flask, request, jsonify
-from flask_restful import Resource, Api, reqparse
+from flask import Flask, request
+from flask_restful import Resource, Api
 from marshmallow import Schema, fields
-import sqlalchemy
-import logging
-import pandas as pd
-import ast
+
 from model import Customers, Installments, Leases
 
 from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy, BaseQuery
-from sqlalchemy.sql import text
+from flask_sqlalchemy import SQLAlchemy
 
 DB_NAME = 'beequip.db'
 
@@ -41,6 +37,5 @@ class OutstandingLeaseAmount(Resource):
 
 api.add_resource(OutstandingLeaseAmount, '/outstandingleaseamount')
 
-if __name__ == '__main__':
-    
+if __name__ == '__main__':  
     app.run()  # run our Flask app
