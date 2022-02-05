@@ -14,6 +14,5 @@ def create_connection(db_file):
         if conn:
             conn.close()
 
-
 if __name__ == '__main__':
-    create_connection(r"C:\sqlite\db\pythonsqlite.db")
+    create_connection(r"beequip.db")
