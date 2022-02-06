@@ -2,7 +2,7 @@
 In this repository we explore a new REST-API for beequip.
 
 ## Contributors
-- [Frank Tubbing](https://tsgit.transfer-solutions.com/frank_tubbing)
+- [Frank Tubbing](https://github.com/FrankTub)
 
 ## Approach
 Download latest [anaconda version](https://docs.anaconda.com/anaconda/install/windows/) and install this.
