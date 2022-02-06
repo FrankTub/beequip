@@ -27,6 +27,11 @@ class OutstandingLeaseAmount(Resource):
        errors = OutstandingLeaseAmountSchema.validate(request.args)
        if errors:
            return {'error': errors}, 400
+       try:
+           datetime.strptime(request.args['date'], '%Y-%m-%d')
+       except ValueError:
+           datedict = {'dateinput' : request.args['date']}
+           return {'error': datedict}, 400
        amt = db.session.query(Installments).join(Leases).filter(Leases.reference == request.args['reference']).filter(Installments.date == datetime.strptime(request.args['date'], '%Y-%m-%d')).with_entities(Installments.outstanding_start).all()
        #logging.error('%s raised an error', amt)
        if not amt:

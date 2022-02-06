@@ -1,4 +1,10 @@
-# Getting Started
+## Introduction
+In this repository we explore a new REST-API for beequip.
+
+## Contributors
+- [Frank Tubbing](https://tsgit.transfer-solutions.com/frank_tubbing)
+
+## Approach
 Download latest [anaconda version](https://docs.anaconda.com/anaconda/install/windows/) and install this.
 
 Open anaconda prompt and run.
@@ -23,6 +29,7 @@ Found out later that debugging in vsc resulted in error due to missing the conda
 %USERPROFILE%\Anaconda3\Library\bin
 %USERPROFILE%\Anaconda3\Scripts
 %USERPROFILE%\Anaconda3\condabin
+%USERPROFILE%\Anaconda3
 ```
 
 Download [sqlite](https://www.sqlite.org/download.html) and use precompiled Binaries for Windows. Open command prompt and navigate to location where you placed the sqlite binaries, in my case `C:\Program Files\Sqlite` and create a database file in this repo.  Edit: could also have used following [approach](https://flask.palletsprojects.com/en/2.0.x/tutorial/database/).
@@ -51,16 +58,13 @@ select * from leases;
 select * from installments;
 ```
 
-Follow along with [example](https://realpython.com/api-integration-in-python/).
-
-# Results
+## Results
 - What's the outstanding for a lease given a reference and date?
 ```sql
-select outstanding_start
+select outstanding_start -- not sure if required to aggregrate it
 from   leases lss join installments ism on lss.installment_no = ism.installment_no
 where  lss.reference = 'BQ2333.20132.01'
-and    date(ism.date) = date('2017-12-05' )
-;
+and    date(ism.date) = date('2017-12-05')
 ```
 
 This can be achieved by our app by running `app.py`. I did this using visual studio code and run app.py. Output is something like.
@@ -72,9 +76,46 @@ This can be achieved by our app by running `app.py`. I did this using visual stu
  * Debug mode: off
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
-Use the url that is provided and add the following `outstandingleaseamount?reference=BQ2333.20132.01&date=2017-12-05`, in my example this will look like `http://127.0.0.1:5000/outstandingleaseamount?reference=BQ2333.20132.01&date=2017-12-05`.
+Use the url that is provided and add the following `outstandingleaseamount?reference=BQ2333.20132.01&date=2017-12-05`, in my example this will look like `http://127.0.0.1:5000/outstandingleaseamount?reference=BQ2333.20132.01&date=2017-12-05`. Note that the date should always be formatted in `YYYY-MM-DD`.
 
 - What's the total outstanding for a organisation given a Camber of Commerce number and date?
+```sql
+select sum(outstanding_start) as outstanding_start -- not sure if required to aggregrate it
+from   leases lss 
+join   installments ism on lss.installment_no = ism.installment_no
+join   customers ctm on lss.customer_id = ctm.id
+where  ctm.coc_number = '32076937'
+and    date(ism.date) = date('2017-12-05' )
+```
 - What's the total outstanding per team and lane given a date?
+```sql
+select lss.lane, lss.team, sum(outstanding_start)
+from   leases lss join installments ism on lss.installment_no = ism.installment_no
+where  1=1
+and    date(ism.date) = date('2017-12-05')
+group by lss.lane, lss.team
+```
 - What's the average outstanding at the start of the lease per team and lane?
+```sql
+select lss.lane, lss.team, avg(outstanding_start)
+from   leases lss join installments ism on lss.installment_no = ism.installment_no
+where  ism.t = 1
+group by lss.lane, lss.team
+```
 - What's the total daily outstanding given a year?
+==> Note sure what your definition is.
+
+## File descriptions
+Within the repo you'll find the following directorie(s) and file(s_).
+
+```text
+beequip/
+├── app.py # main python file to start the api
+├── model.py # database structure declared
+├── beequip.db # SQLite database containing original csv data
+├── README.md
+└── data/
+    ├── customers.csv
+    ├── installments.csv 
+    └── leases.csv 
+```
